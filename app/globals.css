@@ -1,0 +1,314 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #161616;
+  --bg-hover: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+  --accent-green: #00FF00;
+  --accent-green-hover: #00DD00;
+  --accent-green-glow: rgba(0, 255, 0, 0.3);
+  --border-subtle: #222222;
+  --border-visible: #333333;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --neon-green: #00FF00;
+}
+
+body {
+  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.02em;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--accent-green);
+  color: black;
+}
+
+/* --- ANIMATIONS START --- */
+
+/* 1. Animate In (Fade in, slide up) */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  animation: fadeSlideUp 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(10) { animation-delay: 450ms; }
+
+/* 2. Border Beam Animation */
+@keyframes borderBeam {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.border-beam {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-beam::before {
+  content: '';
+  position: absolute;
+  inset: -1px; /* Extends beam slightly outside border */
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg, 
+    transparent 0% 20%, 
+    var(--accent-green) 50%, 
+    transparent 80% 100%
+  );
+  background-size: 200% 200%;
+  animation: borderBeam 4s linear infinite; /* Infinite loop */
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+  
+  /* Masking to create the 1px border effect */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.border-beam:hover::before {
+  opacity: 1;
+}
+
+/* 3. Marquee Infinite Loop */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-content {
+  animation: marquee 30s linear infinite; /* Adjust time for desired speed */
+}
+
+/* 3b. Slider Animation - handle slides back and forth */
+@keyframes sliderSlide {
+  0%, 100% { 
+    left: 0px;
+  }
+  50% { 
+    left: calc(100% - 32px);
+  }
+}
+
+@keyframes sliderTrail {
+  0%, 100% { 
+    width: 16px;
+  }
+  50% { 
+    width: calc(100% - 32px);
+  }
+}
+
+.slider-handle-animate {
+  animation: sliderSlide 3s ease-in-out infinite;
+}
+
+.slider-trail-animate {
+  animation: sliderTrail 3s ease-in-out infinite;
+}
+
+
+/* 4. Clip Animation (Background) - Structural CSS only */
+.clip-columns-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: -2;
+}
+
+.clip-col {
+  flex: 1;
+  background-color: var(--bg-primary);
+  clip-path: inset(0 0 100% 0);
+  animation: clip-reveal 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.clip-col:nth-child(2) { animation-delay: 0.1s; }
+.clip-col:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes clip-reveal {
+  to {
+    clip-path: inset(0 0 0% 0);
+  }
+}
+/* --- ANIMATIONS END --- */
+
+
+/* Utility overrides and scrollbar styling */
+.glow-green {
+  box-shadow: 0 0 30px var(--accent-green-glow);
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 3px; }
+
+/* Nebula Pill Button - Dark sleek style with border beam */
+.nebula-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 18px 40px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  border: 1px solid #2a2a2a;
+  border-radius: 50px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow: hidden;
+}
+
+.nebula-btn:hover {
+  border-color: #3a3a3a;
+  transform: translateY(-1px);
+}
+
+.nebula-btn-text {
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+}
+
+.nebula-btn-arrow {
+  font-size: 18px;
+  color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.nebula-btn:hover .nebula-btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Border beam animation on hover */
+.nebula-btn-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: 50px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nebula-btn:hover .nebula-btn-beam {
+  opacity: 1;
+  animation: beamSweep 1.5s linear infinite;
+}
+
+@keyframes beamSweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Legacy Glass Pill Button */
+.psl-glass-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.psl-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.psl-glass-btn .dot {
+  width: 6px;
+  height: 6px;
+  background: #00FF00;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00FF00;
+}
+
+.psl-glass-btn .btn-text {
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.psl-glass-btn .arrow {
+  color: #fff;
+  font-size: 18px;
+}
