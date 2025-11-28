@@ -53,27 +53,33 @@ export function SlotMachineWheel({ games, targetGame, onComplete }: SlotMachineW
   useEffect(() => {
     if (!games || games.length === 0 || !targetGame) return
     
-    let speed = 30
-    let elapsed = 0
-    const totalDuration = 1800  // Reduced from 5000 to 1800ms (1.8 seconds)
-    const slowdownStart = 1000  // Start slowing at 1 second
+    let speed = 50
+    let count = 0
+    const totalSpins = 8  // Just 8 quick spins
     let timeoutId: NodeJS.Timeout
+    let lastIndex = -1  // Track last shown game to avoid repeats
 
     const spin = () => {
-      setDisplayIndex(Math.floor(Math.random() * games.length))
-      
-      elapsed += speed
-      
-      if (elapsed < slowdownStart) {
-        setPhase('spinning')
-        setBlur(2)
-        speed = 30 + Math.random() * 15
-      } else if (elapsed < totalDuration) {
-        setPhase('slowing')
-        const progress = (elapsed - slowdownStart) / (totalDuration - slowdownStart)
-        setBlur(Math.max(0, 2 * (1 - progress)))
-        speed = 30 + (progress * 200)
+      // Pick a random index that's different from the last one
+      let newIndex
+      if (games.length > 1) {
+        do {
+          newIndex = Math.floor(Math.random() * games.length)
+        } while (newIndex === lastIndex)
       } else {
+        newIndex = 0
+      }
+      lastIndex = newIndex
+      setDisplayIndex(newIndex)
+      count++
+      
+      if (count < totalSpins) {
+        setPhase('spinning')
+        setBlur(1)
+        speed = 50 + (count * 15)  // Gets slightly slower each spin
+        timeoutId = setTimeout(spin, speed)
+      } else {
+        // Lock on target
         const targetIndex = games.findIndex(g => g.id === targetGame.id)
         setDisplayIndex(targetIndex !== -1 ? targetIndex : 0)
         setPhase('locked')
@@ -81,18 +87,15 @@ export function SlotMachineWheel({ games, targetGame, onComplete }: SlotMachineW
         
         setTimeout(() => {
           onComplete()
-        }, 600)  // Reduced from 1500 to 600ms
-        return
+        }, 400)  // Quick 400ms pause then move on
       }
-      
-      timeoutId = setTimeout(spin, speed)
     }
 
-    const startDelay = setTimeout(() => spin(), 100)  // Reduced from 300 to 100ms
+    // Start immediately
+    spin()
 
     return () => {
       clearTimeout(timeoutId)
-      clearTimeout(startDelay)
     }
   }, [games, targetGame, onComplete])
 
@@ -204,7 +207,7 @@ export function SlotMachineWheel({ games, targetGame, onComplete }: SlotMachineW
                 backgroundColor: '#00FF00',
                 borderRadius: '2px',
                 width: phase === 'locked' ? '100%' : '0%',
-                transition: 'width 1.8s ease-out',
+                transition: 'width 0.8s ease-out',
                 boxShadow: '0 0 8px rgba(0, 255, 0, 0.5)'
               }}
             />

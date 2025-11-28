@@ -497,33 +497,120 @@ export default function Home() {
           {/* How to Play Modal */}
           {showExplainer && (
             <div 
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                backdropFilter: 'blur(8px)',
+                padding: '20px'
+              }}
               onClick={() => setShowExplainer(false)}
             >
               <div 
-                className="bg-[#111] border border-[#333] rounded-xl p-6 max-w-md mx-4"
+                style={{
+                  backgroundColor: '#111',
+                  border: '1px solid #222',
+                  borderRadius: '20px',
+                  padding: '28px',
+                  maxWidth: '380px',
+                  width: '100%',
+                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+                }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-white">How to Play</h3>
-                  <button onClick={() => setShowExplainer(false)} className="text-[#666] hover:text-white">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 500, color: '#fff', margin: 0 }}>How to Play</h3>
+                  <button 
+                    onClick={() => setShowExplainer(false)} 
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#555',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <ul className="space-y-3 text-[#999] text-sm">
-                  <li><span className="text-white">Head-to-head matchups.</span> You vs. one opponent.</li>
-                  <li><span className="text-white">Randomized game.</span> A matchup is picked for you.</li>
-                  <li><span className="text-white">Adjust props.</span> Go aggressive or conservative.</li>
-                  <li><span className="text-white">Earn points.</span> You don't need to hit every leg.</li>
-                  <li><span className="text-white">Double down.</span> Risk half entry for 8x payout.</li>
-                </ul>
+
+                {/* Steps */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 255, 0, 0.15)', border: '1px solid rgba(0, 255, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#00FF00' }}>1</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#fff', marginBottom: '2px' }}>Find a Match</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Get randomly paired with an opponent for a head-to-head draft</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 255, 0, 0.15)', border: '1px solid rgba(0, 255, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#00FF00' }}>2</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#fff', marginBottom: '2px' }}>Draft 5 Props</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Select player props and adjust the line - go safe or risky</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 255, 0, 0.15)', border: '1px solid rgba(0, 255, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#00FF00' }}>3</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#fff', marginBottom: '2px' }}>Earn Points</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Each prop hit earns points - you don't need to hit every leg</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(255, 107, 53, 0.15)', border: '1px solid rgba(255, 107, 53, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#ff6b35' }}>4</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#fff', marginBottom: '2px' }}>Double Down</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Risk half your entry for an 8x multiplier on winnings</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 255, 0, 0.15)', border: '1px solid rgba(0, 255, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#00FF00' }}>5</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#fff', marginBottom: '2px' }}>Beat Your Opponent</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Outscore them to win cash - it's that simple</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Close Button */}
                 <button 
                   onClick={() => setShowExplainer(false)}
-                  className="mt-6 w-full py-2.5 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/10 transition-all"
+                  style={{
+                    width: '100%',
+                    marginTop: '24px',
+                    padding: '14px',
+                    background: 'linear-gradient(90deg, #00FF00, #00DD00)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#000',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
                 >
-                  Got it
+                  Got It
                 </button>
               </div>
             </div>
