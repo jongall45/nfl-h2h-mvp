@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased bg-black text-white overflow-x-hidden selection:bg-[#00FF00] selection:text-black min-h-screen`}>
         <div className="fixed inset-0 z-[100] pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-        {children}
+          {children}
       </body>
     </html>
   );

@@ -13,15 +13,37 @@ export function OpponentReveal({ onComplete, availableProps }: OpponentRevealPro
   const [step, setStep] = useState(0)
   const [headshotUrl, setHeadshotUrl] = useState<string | null>(null)
   
-  // Bot Logic: Pick a random player from the list
+  // Bot Logic: Pick a random player and a random line from their alternates
   const [opponentPick] = useState(() => {
     const randomProp = availableProps[Math.floor(Math.random() * availableProps.length)] || { player: "Opponent", stat: "Props" }
-    const isAggressive = Math.random() > 0.5
+    
+    // If this prop has alternate lines, pick one randomly (weighted towards risky plays)
+    let selectedLine = { line: randomProp.line, points: 5, riskLabel: 'BASE' }
+    
+    if (randomProp.alternateLines && randomProp.alternateLines.length > 0) {
+      // Weight towards higher risk (higher index = higher line = more points)
+      const weights = randomProp.alternateLines.map((_: any, i: number) => i + 1)
+      const totalWeight = weights.reduce((a: number, b: number) => a + b, 0)
+      let random = Math.random() * totalWeight
+      
+      let selectedIndex = 0
+      for (let i = 0; i < weights.length; i++) {
+        random -= weights[i]
+        if (random <= 0) {
+          selectedIndex = i
+          break
+        }
+      }
+      
+      selectedLine = randomProp.alternateLines[selectedIndex]
+    }
+    
     return {
       ...randomProp,
-      isAggressive,
-      points: isAggressive ? 8 : 2,
-      strategy: isAggressive ? "RISK" : "SAFE"
+      line: selectedLine.line,
+      points: selectedLine.points,
+      strategy: selectedLine.riskLabel || 'BASE',
+      isAggressive: selectedLine.points >= 6
     }
   })
 
@@ -118,6 +140,17 @@ export function OpponentReveal({ onComplete, availableProps }: OpponentRevealPro
                 
                 <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '2px' }}>{opponentPick.player}</div>
                 <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{opponentPick.stat}</div>
+                
+                {/* Line they selected */}
+                <div style={{ 
+                  marginTop: '8px',
+                  padding: '6px 12px',
+                  backgroundColor: '#111',
+                  borderRadius: '6px',
+                  display: 'inline-block'
+                }}>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>{opponentPick.line}+ yards</span>
+                </div>
               </div>
 
               {/* Strategy & Points */}

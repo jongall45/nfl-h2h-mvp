@@ -34,14 +34,14 @@ export function DoubleDown({ onDecide, potentialPoints }: DoubleDownProps) {
             justifyContent: 'center'
           }}>
             <AlertTriangle style={{ width: 24, height: 24, color: '#eab308' }} />
-          </div>
-          
+      </div>
+
           <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', fontStyle: 'italic', textTransform: 'uppercase', marginBottom: '8px' }}>
-            Moment of Truth
-          </h2>
+        Moment of Truth
+      </h2>
           <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.5 }}>
             You have <span style={{ color: '#fff', fontWeight: 600 }}>{potentialPoints}</span> potential points. Cap your upside or chase the jackpot?
-          </p>
+      </p>
         </div>
 
         {/* Inner Content Area - Options */}
@@ -52,9 +52,9 @@ export function DoubleDown({ onDecide, potentialPoints }: DoubleDownProps) {
           border: '1px solid #1a1a1a',
           overflow: 'hidden'
         }}>
-          {/* Option 1: Safe */}
-          <button 
-            onClick={() => onDecide(false)}
+        {/* Option 1: Safe */}
+        <button 
+          onClick={() => onDecide(false)}
             style={{
               width: '100%',
               padding: '16px',
@@ -70,15 +70,15 @@ export function DoubleDown({ onDecide, potentialPoints }: DoubleDownProps) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <span style={{ fontSize: '15px', fontWeight: 600, color: '#fff' }}>Play It Safe</span>
               <Shield style={{ width: 20, height: 20, color: '#555' }} />
-            </div>
+          </div>
             <div style={{ fontSize: '11px', color: '#666' }}>
-              Keep your current entry. Win 2x if you beat your opponent.
-            </div>
-          </button>
+            Keep your current entry. Win 2x if you beat your opponent.
+          </div>
+        </button>
 
-          {/* Option 2: Double Down */}
-          <button 
-            onClick={() => onDecide(true)}
+        {/* Option 2: Double Down */}
+        <button 
+          onClick={() => onDecide(true)}
             style={{
               width: '100%',
               padding: '16px',
@@ -93,11 +93,11 @@ export function DoubleDown({ onDecide, potentialPoints }: DoubleDownProps) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <span style={{ fontSize: '15px', fontWeight: 700, color: '#00FF00', fontStyle: 'italic' }}>DOUBLE DOWN</span>
               <Zap style={{ width: 20, height: 20, color: '#00FF00', fill: '#00FF00' }} />
-            </div>
+          </div>
             <div style={{ fontSize: '11px', color: '#888' }}>
               Add $25 to entry. Unlock <span style={{ color: '#fff', fontWeight: 600 }}>8x Multiplier</span> if you go 5/5.
-            </div>
-          </button>
+          </div>
+        </button>
         </div>
       </div>
     </div>

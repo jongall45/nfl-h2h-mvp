@@ -6,7 +6,7 @@ import { Clock } from "lucide-react"
 export function Timer({ onExpire }: { onExpire: () => void }) {
   const [timeLeft, setTimeLeft] = useState(60)
   const onExpireRef = useRef(onExpire)
-  
+
   // Keep ref updated
   useEffect(() => {
     onExpireRef.current = onExpire
@@ -24,12 +24,12 @@ export function Timer({ onExpire }: { onExpire: () => void }) {
         return prev - 1
       })
     }, 1000)
-    
+
     return () => clearInterval(timer)
   }, []) // Empty deps - only run once on mount
 
   const isUrgent = timeLeft < 10
-  
+
   return (
     <div className="w-full flex justify-center mb-4">
       <div style={{
@@ -54,9 +54,9 @@ export function Timer({ onExpire }: { onExpire: () => void }) {
             color: isUrgent ? '#ef4444' : '#fff',
             lineHeight: 1
           }}>
-            00:{timeLeft.toString().padStart(2, '0')}
-          </span>
-        </div>
+          00:{timeLeft.toString().padStart(2, '0')}
+        </span>
+      </div>
       </div>
     </div>
   )

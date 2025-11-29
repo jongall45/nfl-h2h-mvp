@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --bg-primary: #0a0a0a;
@@ -29,6 +26,12 @@ body {
   color: var(--text-secondary);
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.02em;
+}
+
+/* Global Link Reset */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 html {
@@ -88,7 +91,7 @@ html {
 .border-beam::before {
   content: '';
   position: absolute;
-  inset: -1px; /* Extends beam slightly outside border */
+  inset: -1px;
   border-radius: inherit;
   background: conic-gradient(
     from 0deg, 
@@ -97,12 +100,10 @@ html {
     transparent 80% 100%
   );
   background-size: 200% 200%;
-  animation: borderBeam 4s linear infinite; /* Infinite loop */
+  animation: borderBeam 4s linear infinite;
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s;
-  
-  /* Masking to create the 1px border effect */
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -120,10 +121,10 @@ html {
 }
 
 .marquee-content {
-  animation: marquee 30s linear infinite; /* Adjust time for desired speed */
+  animation: marquee 30s linear infinite;
 }
 
-/* 3b. Slider Animation - handle slides back and forth */
+/* 3b. Slider Animation */
 @keyframes sliderSlide {
   0%, 100% { 
     left: 0px;
@@ -150,8 +151,7 @@ html {
   animation: sliderTrail 3s ease-in-out infinite;
 }
 
-
-/* 4. Clip Animation (Background) - Structural CSS only */
+/* 4. Clip Animation (Background) */
 .clip-columns-container {
   position: fixed;
   top: 0;
@@ -179,7 +179,6 @@ html {
 }
 /* --- ANIMATIONS END --- */
 
-
 /* Utility overrides and scrollbar styling */
 .glow-green {
   box-shadow: 0 0 30px var(--accent-green-glow);
@@ -189,11 +188,16 @@ html {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 3px; }
 
-/* Nebula Pill Button - Dark sleek style with border beam */
+/* Nebula Pill Button */
 .nebula-btn {
   position: relative;
   display: inline-flex;

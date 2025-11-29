@@ -26,7 +26,7 @@ export function Explainer({ onClose }: ExplainerProps) {
             </svg>
           </button>
         </div>
-        
+
         {/* Content - compact list */}
         <ul className="space-y-3 text-[#999] text-sm">
           <li className="flex items-start gap-2">

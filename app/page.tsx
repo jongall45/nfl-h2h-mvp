@@ -464,28 +464,43 @@ export default function Home() {
             </p>
             
             {/* Glass Pill Buttons */}
-            <div className="flex flex-row items-center gap-4 mb-16">
+            <div className="flex flex-col items-center gap-4 mb-16">
+              {/* Top Row - Main Actions */}
+              <div className="flex flex-row items-center gap-4">
+                {/* HOW TO PLAY */}
+                <button 
+                  onClick={() => setShowExplainer(true)}
+                  className="psl-glass-btn"
+                >
+                  <span className="dot"></span>
+                  <span className="btn-text">How to Play</span>
+                  <span className="arrow">→</span>
+                </button>
+                
+                {/* DRAFT NOW - Quick H2H */}
+                <button 
+                  onClick={() => findMatch(false)}
+                  className="psl-glass-btn"
+                >
+                  <span className="dot"></span>
+                  <span className="btn-text">Quick Draft</span>
+                  <span className="arrow">→</span>
+                </button>
+              </div>
               
-              {/* HOW TO PLAY */}
-              <button 
-                onClick={() => setShowExplainer(true)}
+              {/* Tournament Mode Button */}
+              <Link
+                href="/contests"
                 className="psl-glass-btn"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 200, 0, 0.05) 100%)',
+                  borderColor: 'rgba(0, 255, 0, 0.3)'
+                }}
               >
-                <span className="dot"></span>
-                <span className="btn-text">How to Play</span>
+                <span className="dot" style={{ background: '#FFD700', boxShadow: '0 0 10px #FFD700' }}></span>
+                <span className="btn-text">🏆 Tournaments</span>
                 <span className="arrow">→</span>
-              </button>
-              
-              {/* DRAFT NOW */}
-              <button 
-                onClick={() => findMatch(false)}
-                className="psl-glass-btn"
-              >
-                <span className="dot"></span>
-                <span className="btn-text">Draft Now</span>
-                <span className="arrow">→</span>
-              </button>
-              
+              </Link>
             </div>
 
             {/* NFL Team Logos Marquee */}
@@ -676,6 +691,37 @@ export default function Home() {
                   PICK {picks.length + 1} / 5
                 </div>
                 <BettingCard {...selectedProp} onLockIn={handleLockIn} />
+                
+                {/* Back Button */}
+                <button
+                  onClick={() => {
+                    setSelectedProp(null)
+                    setStep('SELECTION')
+                  }}
+                  style={{
+                    marginTop: '8px',
+                    padding: '12px 20px',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #333',
+                    color: '#888',
+                    fontWeight: 500,
+                    fontSize: '12px',
+                    letterSpacing: '0.05em',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                  className="hover:border-[#00FF00] hover:text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                  Back to Props
+                </button>
               </div>
             )}
 

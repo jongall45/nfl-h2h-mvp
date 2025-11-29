@@ -3,21 +3,41 @@
 import { useState, useEffect } from "react"
 import { getPlayerId, getPlayerHeadshotUrl } from "../lib/espn"
 
+interface AlternateLine {
+  line: number
+  odds: number
+  points: number
+  riskLabel: string
+}
+
 interface BettingCardProps {
   player: string
   team: string
   opponent: string
   stat: string
   line: number
+  odds?: number
   type: string
+  alternateLines?: AlternateLine[]
   onLockIn: (points: number, finalLine: number, riskLabel: string) => void
 }
 
-export function BettingCard({ player, team, opponent, stat, line, type, onLockIn }: BettingCardProps) {
-  const [sliderValue, setSliderValue] = useState(50)
+export function BettingCard({ player, team, opponent, stat, line, odds, type, alternateLines = [], onLockIn }: BettingCardProps) {
+  const [selectedLineIndex, setSelectedLineIndex] = useState<number>(0)
   const [imageError, setImageError] = useState(false)
   const [headshotUrl, setHeadshotUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  // Find and set the base line index on mount
+  useEffect(() => {
+    if (alternateLines.length > 0) {
+      // Find the line closest to -110 odds (the "base" line)
+      const baseIndex = alternateLines.findIndex(l => 
+        l.odds >= -120 && l.odds <= -100
+      )
+      setSelectedLineIndex(baseIndex >= 0 ? baseIndex : Math.floor(alternateLines.length / 2))
+    }
+  }, [alternateLines])
   
   // Fetch player headshot
   useEffect(() => {
@@ -38,24 +58,33 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
     return () => { mounted = false }
   }, [player])
   
-  // Math Logic
-  const isQB = type === 'player_pass_yds';
-  const yardMultiplier = isQB ? 25 : 10;
-  const pointOffset = Math.round(((sliderValue - 50) / 50) * 3); 
-  const targetYards = Math.round(line + (pointOffset * yardMultiplier));
-  const potentialPoints = 5 + pointOffset;
-
-  // Calculate min/max yards
-  const minYards = Math.round(line - (3 * yardMultiplier))
-  const maxYards = Math.round(line + (3 * yardMultiplier))
-
-  // --- Dynamic Styling ---
-  let riskLabel = "BASE"
+  // If no alternate lines, fall back to single line with default points
+  const hasAlternates = alternateLines.length > 0
+  const selectedLine = hasAlternates ? alternateLines[selectedLineIndex] : { 
+    line, 
+    odds: odds || -110, 
+    points: 5, 
+    riskLabel: 'BASE' 
+  }
   
-  if (potentialPoints < 5) {
-    riskLabel = "SAFE"
-  } else if (potentialPoints > 5) {
-    riskLabel = "RISK"
+  const potentialPoints = selectedLine.points
+  const targetYards = selectedLine.line
+  const riskLabel = selectedLine.riskLabel
+
+  // Format odds for display
+  const formatOdds = (odds: number) => {
+    return odds > 0 ? `+${odds}` : `${odds}`
+  }
+
+  // Get color based on risk
+  const getRiskColor = (label: string) => {
+    switch(label) {
+      case 'SAFE': return '#00FF00'
+      case 'BASE': return '#ffffff'
+      case 'RISK': return '#ff6b35'
+      case 'MAX': return '#ef4444'
+      default: return '#ffffff'
+    }
   }
 
   return (
@@ -97,11 +126,22 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
             )}
           </div>
           
-          {/* Dots indicator */}
-          <div style={{ display: 'flex', gap: '5px' }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: potentialPoints < 5 ? '#00FF00' : '#333' }}></div>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: potentialPoints === 5 ? '#ffffff' : '#333' }}></div>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: potentialPoints > 5 ? '#ff6b35' : '#333' }}></div>
+          {/* Risk indicator badge */}
+          <div style={{ 
+            padding: '4px 10px', 
+            borderRadius: '20px', 
+            backgroundColor: `${getRiskColor(riskLabel)}15`,
+            border: `1px solid ${getRiskColor(riskLabel)}40`
+          }}>
+            <span style={{ 
+              fontSize: '10px', 
+              fontWeight: 600, 
+              color: getRiskColor(riskLabel),
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>
+              {riskLabel}
+            </span>
           </div>
         </div>
 
@@ -119,7 +159,7 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
           borderRadius: '14px',
           border: '1px solid #1a1a1a'
         }}>
-          {/* Target Yards - Large Display */}
+          {/* Target Yards & Odds - Large Display */}
           <div style={{ textAlign: 'center', marginBottom: '16px' }}>
             <div style={{ 
               fontSize: '42px', 
@@ -128,12 +168,28 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
               lineHeight: 1,
               marginBottom: '4px'
             }}>
-              {targetYards}
+              {targetYards}+
             </div>
-            <div style={{ color: '#555', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-              Target Yards
+            <div style={{ color: '#555', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>
+              {stat.replace(' Yards', '')} Yards
             </div>
-          </div>
+            {/* Odds display */}
+            <div style={{ 
+              display: 'inline-block',
+              padding: '4px 12px',
+              backgroundColor: '#111',
+              borderRadius: '6px',
+              border: '1px solid #222'
+            }}>
+              <span style={{ 
+                fontSize: '14px', 
+                fontWeight: 500, 
+                color: selectedLine.odds > 0 ? '#00FF00' : '#888'
+              }}>
+                {formatOdds(selectedLine.odds)}
+              </span>
+        </div>
+      </div>
 
           {/* Points Display */}
           <div style={{ 
@@ -148,101 +204,114 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
               fontSize: '36px', 
               fontWeight: 300, 
               lineHeight: 1,
-              color: potentialPoints < 5 ? '#00FF00' : potentialPoints > 5 ? '#ff6b35' : '#ffffff',
+              color: getRiskColor(riskLabel),
               transition: 'color 0.2s',
               marginBottom: '4px'
             }}>
               {potentialPoints}
-            </div>
+        </div>
             <div style={{ color: '#555', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Points
-            </div>
-          </div>
+        </div>
+      </div>
 
-          {/* ===== SLIDER SECTION ===== */}
-          <div>
-            {/* Slider Label */}
-            <div style={{ color: '#888', fontSize: '11px', marginBottom: '10px' }}>
-              Adjust Line
-            </div>
-            
-            {/* Min/Max Labels */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ color: '#00FF00', fontSize: '11px', fontWeight: 500 }}>{minYards}</span>
-              <span style={{ color: '#ff6b35', fontSize: '11px', fontWeight: 500 }}>{maxYards}</span>
-            </div>
-            
-            {/* Slider Track */}
-            <div style={{ position: 'relative', height: '32px', display: 'flex', alignItems: 'center' }}>
-              {/* Track Background */}
-              <div style={{ 
-                position: 'absolute', 
-                width: '100%', 
-                height: '4px', 
-                backgroundColor: '#222', 
-                borderRadius: '2px' 
-              }}></div>
-              
-              {/* Track Fill */}
-              <div style={{ 
-                position: 'absolute', 
-                height: '4px', 
-                background: 'linear-gradient(90deg, #00FF00, #00DD00)',
-                borderRadius: '2px',
-                width: `${sliderValue}%`,
-                boxShadow: '0 0 8px rgba(0, 255, 0, 0.3)'
-              }}></div>
-
-              {/* Handle - Pill with arrows */}
-              <div style={{ 
-                position: 'absolute',
-                left: `calc(${sliderValue}% - 18px)`,
-                width: '36px',
-                height: '22px',
-                borderRadius: '11px',
-                backgroundColor: '#222',
-                border: '1px solid #333',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '1px',
-                zIndex: 40,
-                pointerEvents: 'none',
-                transition: 'left 0.05s ease-out'
-              }}>
-                <svg width="5" height="9" viewBox="0 0 6 10" fill="none">
-                  <path d="M5 1L1 5L5 9" stroke="#666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <svg width="5" height="9" viewBox="0 0 6 10" fill="none">
-                  <path d="M1 1L5 5L1 9" stroke="#666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+          {/* ===== LINE SELECTION ===== */}
+          {hasAlternates && alternateLines.length > 1 ? (
+            <div>
+              <div style={{ color: '#888', fontSize: '11px', marginBottom: '12px' }}>
+                Select Line
               </div>
-
-              {/* Invisible Input */}
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={sliderValue}
-                onChange={(e) => setSliderValue(parseInt(e.target.value))}
-                style={{ 
-                  width: '100%', 
-                  height: '32px', 
-                  opacity: 0, 
-                  cursor: 'grab', 
-                  position: 'absolute', 
-                  zIndex: 50 
-                }}
-              />
+              
+              {/* Line Options Grid */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))',
+                gap: '8px',
+                maxHeight: '180px',
+                overflowY: 'auto',
+                padding: '4px'
+              }}>
+                {alternateLines.map((altLine, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedLineIndex(index)}
+                    style={{
+                      padding: '10px 8px',
+                      backgroundColor: selectedLineIndex === index ? '#1a1a1a' : 'transparent',
+                      border: `1px solid ${selectedLineIndex === index ? getRiskColor(altLine.riskLabel) : '#222'}`,
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                      opacity: selectedLineIndex === index ? 1 : 0.7
+                    }}
+                  >
+                    <div style={{ 
+                      fontSize: '14px', 
+                      fontWeight: 600, 
+                      color: '#fff',
+                      marginBottom: '2px'
+                    }}>
+                      {altLine.line}+
+                    </div>
+                    <div style={{ 
+                      fontSize: '10px', 
+                      color: altLine.odds > 0 ? '#00FF00' : '#666',
+                      marginBottom: '4px'
+                    }}>
+                      {formatOdds(altLine.odds)}
+                    </div>
+                    <div style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: getRiskColor(altLine.riskLabel)
+                    }}>
+                      {altLine.points}pt
+                    </div>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Legend */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: '16px', 
+                marginTop: '12px',
+                paddingTop: '12px',
+                borderTop: '1px solid #1a1a1a'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#00FF00' }}></div>
+                  <span style={{ fontSize: '9px', color: '#666', textTransform: 'uppercase' }}>Safe</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ffffff' }}></div>
+                  <span style={{ fontSize: '9px', color: '#666', textTransform: 'uppercase' }}>Base</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ff6b35' }}></div>
+                  <span style={{ fontSize: '9px', color: '#666', textTransform: 'uppercase' }}>Risk</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
+                  <span style={{ fontSize: '9px', color: '#666', textTransform: 'uppercase' }}>Max</span>
+                </div>
+              </div>
             </div>
-            
-            {/* Risk Labels */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-              <span style={{ color: '#00FF00', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Safe</span>
-              <span style={{ color: '#444', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Base</span>
-              <span style={{ color: '#ff6b35', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Risk</span>
+          ) : (
+            /* Fallback: No alternates available */
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '12px',
+              backgroundColor: '#111',
+              borderRadius: '10px',
+              border: '1px solid #1a1a1a'
+            }}>
+              <div style={{ fontSize: '11px', color: '#666' }}>
+                Standard line only
+              </div>
             </div>
-          </div>
+          )}
         </div>
         
         {/* ===== LOCK IN BUTTON ===== */}
@@ -265,9 +334,9 @@ export function BettingCard({ player, team, opponent, stat, line, type, onLockIn
             }}
             className="hover:opacity-90 active:scale-[0.98]"
           >
-            Lock In Pick
+            Lock In • {potentialPoints} Points
           </button>
-        </div>
+      </div>
       </div>
     </div>
   )
