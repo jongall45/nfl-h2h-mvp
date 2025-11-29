@@ -281,7 +281,7 @@ export default function ContestEntryPage() {
                   <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Pick {picks.length + 1} / 5</div>
                   <h2 className="text-xl font-bold">Select Player Prop</h2>
                 </div>
-                <Timer key={`select-${picks.length}`} onExpire={() => handleSelectProp(availableProps[0])} />
+                <Timer key={`select-${picks.length}`} onExpire={() => setTimeout(() => handleSelectProp(availableProps[0]), 0)} />
               </div>
               
               <MatchupCard 
@@ -303,7 +303,7 @@ export default function ContestEntryPage() {
                 <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Pick {picks.length + 1} / 5</div>
                 <h2 className="text-xl font-bold">Set Your Line</h2>
               </div>
-              <Timer key={`adjust-${picks.length}`} onExpire={() => handleLockIn(5, selectedProp.line, "BASE")} />
+              <Timer key={`adjust-${picks.length}`} onExpire={() => setTimeout(() => handleLockIn(5, selectedProp.line, "BASE"), 0)} />
             </div>
 
             <BettingCard {...selectedProp} onLockIn={handleLockIn} />
